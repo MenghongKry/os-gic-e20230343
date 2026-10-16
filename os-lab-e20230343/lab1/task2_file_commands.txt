@@ -1,0 +1,13 @@
+/home/gic-kry-menghong/oslab-work/lab1/task2_files
+cloud.txt
+ocean.txt
+This is file ocean
+This is file cloud
+cloud.txt
+ocean.txt
+ocean_copy.txt
+cloud_renamed.txt
+ocean.txt
+ocean_copy.txt
+cloud_renamed.txt
+ocean.txt
