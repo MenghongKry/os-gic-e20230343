@@ -126,14 +126,17 @@ For each prediction answer (`oslab predict lab1`), write **confirmed** or **corr
 
 ---
 
-## Plus / Challenge (only if you did them)
+## Plus / Challenge
 
-Your answers.
+### A. More About APT
+- `apt-cache policy mc` showed `Installed: (none)` and `Candidate: 3:4.8.33-1.1build1`. This confirms that the purge removed mc; the candidate is the version APT would install.
+- `apt list --installed | grep mc` did not list mc itself. It only matched packages whose names contain "mc" (`libxdmcp6`, `python3-hamcrest`), plus `mc-data`, which is marked `auto-removable`. mc-data was installed automatically as a dependency, and purging mc did not remove it. `sudo apt autoremove` would.
+- `update` only refreshes the package list; `upgrade` installs newer versions of installed packages. Always run `update` first.
+- I installed `tree` and ran `tree ~/os-gic-e20230343` to see my repo structure.
 
-<!-- TODO (optional): top "Tasks:" total, nproc, ps -e | wc -l, with a short explanation. Delete this section if you did not do it. -->
+### B. More About Virtual Machines
+- `systemd-detect-virt` on my Ubuntu VM: `qemu`. On the server: `kvm`.
+- They differ because each machine only reports the layer directly under it: my VM runs on QEMU on my Mac, and the server runs on its own hypervisor.
+- `hostname`: `ubuntu` vs `i4gic-os`, different.
+- `uname -r`: `7.0.0-34-generic(ubuntu)` vs `7.0.0-38-generic(i4gic-os)`. Each VM boots its own kernel, so these can differ.
 
-## AI Note (optional)
-
-One suggestion an AI tool gave you and how you checked it.
-
-<!-- TODO (optional): e.g. "The AI said `remove` keeps files in /etc. I checked it with `ls -ld /etc/mc` after remove and after purge." -->
