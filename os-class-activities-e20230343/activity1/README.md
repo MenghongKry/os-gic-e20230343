@@ -210,19 +210,34 @@ Screenshot of running on Windows:
 
 2. **Monolithic kernel vs. microkernel — which type does Linux use?**
 
-   > In a monolithic kernel, almost all OS services (scheduling, memory management, file systems, device drivers, networking) run together in kernel space in one address space. A microkernel keeps only the minimum (IPC, basic scheduling, memory) in the kernel and runs drivers and file systems as user-space servers. Linux is monolithic, but modular: `lsmod` shows [TODO: number] modules such as [TODO: 2–3 names] that are loaded into kernel space at runtime; they run with full kernel privileges, unlike microkernel servers.
+   > In a **monolithic kernel**, almost all OS services (process scheduling, memory management, file systems, device drivers, networking) run together in kernel space, in one address space and with full privileges. A **microkernel** keeps only the minimum in the kernel (IPC, basic scheduling, low-level memory management) and runs drivers and file systems as separate user-space servers that talk through messages. Linux is **monolithic, but modular**. My `lsmod` output shows loadable modules such as `algif_hash`, `af_alg`, `qrtr`, `isofs`, `vsock`, `cfg80211` and `dm_mirror` (19 in the first 20 lines alone). The "Used by" column shows modules depending on each other inside the kernel (`af_alg` is used by `algif_hash`, `dm_log` by `dm_region_hash` and `dm_mirror`). `modinfo algif_hash` shows it is a file `/lib/modules/7.0.0-34-generic/kernel/crypto/algif_hash.ko.zst` built for exactly this kernel (`vermagic: 7.0.0-34-generic SMP preempt mod_unload modversions aarch64`). Once loaded, it runs in kernel space with full privileges, not as a separate user-space server, so Linux stays monolithic even though parts can be added and removed at runtime.
 
 3. **What memory regions do you see in `/proc/self/maps`?**
 
-   > [TODO: list what your output shows.] Typically: the program's own code and data (`/usr/bin/cat`, with `r-xp` for code and `rw-p` for data), the `[heap]`, shared libraries such as `libc.so.6` and the loader `ld-linux-x86-64.so.2`, sometimes `locale-archive`, anonymous mappings, the `[stack]`, and kernel-provided `[vvar]` and `[vdso]` pages. Each line shows the address range, permissions (r/w/x, p = private), offset, device, inode and path.
+   > The process reading the file is `cat` itself (on this Ubuntu, `cat` is the Rust coreutils binary `/usr/lib/cargo/bin/coreutils/cat`). Its first 20 lines show:
+   > - **Program code and data**: `/usr/lib/cargo/bin/coreutils/cat` three times: `r-xp` (executable code), `r--p` (read-only constants) and `rw-p` (writable global data).
+   > - An **anonymous** `rw-p` region with no file (inode 0), used for uninitialised data (bss).
+   > - The **`[heap]`** (`rw-p`), where `malloc` memory lives.
+   > - **Shared libraries** at much higher addresses: `libpcre2-8.so.0`, `libc.so.6`, `libm.so.6` and `libgcc_s.so.1`. Each is mapped several times with different permissions: `r-xp` code, `---p` guard gap (no access), `r--p` read-only data, `rw-p` writable data.
+   >
+   > Each line shows the address range, permissions (r/w/x, p = private copy), file offset, device (`08:01` = the disk), inode and path. The `[stack]`, `[vdso]` and `[vvar]` regions are further down and are cut off by `head -20`. (`cat /proc/self/maps | grep -E 'stack|vdso|vvar'` shows them.)
 
 4. **Break down the kernel version string from `uname -a`.**
 
-   > [TODO: paste your line and fill in each part.] Example format: `Linux hostname 6.8.0-45-generic #45-Ubuntu SMP PREEMPT_DYNAMIC <build date> x86_64 x86_64 x86_64 GNU/Linux` = kernel name (`Linux`), hostname, kernel release (`6.8.0` = major.minor.patch, `-45` = Ubuntu's ABI/package number, `generic` = kernel flavour; in WSL it ends in `-microsoft-standard-WSL2`), build number and options (`#45-Ubuntu SMP PREEMPT_DYNAMIC` = multi-processor support, preemptible kernel) with build date, machine/processor/hardware platform (`x86_64`), and operating system (`GNU/Linux`).
+   > My output: `Linux ubuntu 7.0.0-34-generic #34-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 2 14:34:54 UTC 2026 aarch64 GNU/Linux`
+   > - `Linux`: kernel name.
+   > - `ubuntu`: hostname of the machine (my Multipass VM).
+   > - `7.0.0-34-generic`: kernel release. `7.0.0` = major.minor.patch, `34` = Ubuntu's ABI/package revision, `generic` = the standard Ubuntu kernel flavour.
+   > - `#34-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 2 14:34:54 UTC 2026`: kernel build version. `#34-Ubuntu` is Ubuntu's build number, `SMP` = supports multiple processors, `PREEMPT_DYNAMIC` = the preemption model can be chosen at boot, followed by the date the kernel was compiled.
+   > - `aarch64`: hardware architecture (64-bit ARM, because the VM runs on an Apple silicon Mac). This is also why `/proc/cpuinfo` shows `CPU implementer`/`CPU part` instead of a model name.
+   > - `GNU/Linux`: the operating system (Linux kernel + GNU user-space tools).
+   >
+   > `/proc/version` adds that it was built by `buildd@bos03-arm64-067` with `aarch64-linux-gnu-gcc` 15.2.0.
 
 5. **How does `/proc` show that the OS is an intermediary between programs and hardware?**
 
-   > User programs like `cat` never access the CPU, RAM or devices directly. When they read `/proc/cpuinfo` or `/proc/meminfo`, they use the normal `open`/`read` system calls, and the kernel answers with information it collected from the hardware. The program only sees what the kernel chooses to expose, through the standard file interface, which is exactly the intermediary role: hardware → kernel → system call → user program.
+   > Programs like `cat` cannot touch the CPU registers, RAM chips or devices directly. When I ran `cat /proc/meminfo`, `cat` only made normal `openat()` and `read()` system calls, and the kernel produced the text on the spot from its own data: `MemTotal: 965736 kB` is the RAM the kernel manages for this VM, the CPU features in `/proc/cpuinfo` (`fp asimd aes sha2 …`) are what the kernel read from the processor, and `/proc/uptime` (`65302.20`) comes from the kernel's clock. `/proc/self/status` even shows the kernel's own record of my process (PID 182406, parent 171539 = my bash, state R). So the program never sees the hardware itself, only what the kernel exposes through the file interface: hardware → kernel → system calls → user program. The same `read()` I used in Task 1 works for these "files", which are really kernel data, not data stored on disk.
+
 
 ---
 
@@ -230,4 +245,15 @@ Screenshot of running on Windows:
 
 What did you learn from this activity? What was the most surprising difference between library functions and system calls?
 
-> [Write your reflection here]
+> I learn that a lot about the command: 
+>   - `multipass shell ubuntu`	Opens a terminal inside the VM named ubuntu.
+>   - `multipass restart ubuntu`	Reboots the VM (also fixes a wrong clock).
+>   - `multipass transfer <mac-file> ubuntu:<vm-path>`	Copies a file from the Mac into the VM
+>   - `sudo apt update`	Downloads the latest list of available packages. sudo = run as administrator.
+>   - `sudo apt install build-essential strace -y`	Installs gcc and friends (build-essential) and the strace tool. -y = answer "yes" automatically.
+>   - `gcc --version`	Prints the compiler version, just to confirm it's installed.
+>   - `date`	Shows the VM's current date/time.
+>   - `gcc -o file_creator_sys file_creator_sys.c`	Compiles the C source file_creator_sys.c into a runnable program. -o sets the output name
+>  - `./file_creator_sys`	Runs the program in the current folder. ./ = "this folder"; Linux doesn't look in the current folder by default.
+>  - `strace ./program`	Runs the program and prints every system call it makes (the requests to the kernel).
+>  - `-e trace=openat,read,write,close`	Show only these 4 kinds of system calls, hiding the rest.
