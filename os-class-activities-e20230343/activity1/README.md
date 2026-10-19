@@ -1,8 +1,8 @@
 # Class Activity 1 — System Calls in Practice
 
-- **Student Name:** [Your Name Here]
+- **Student Name:** Kry Menghong
 - **Student ID:** e20230343
-- **Date:** [Date of Submission]
+- **Date:** [19-October-2026]
 
 ---
 
@@ -160,19 +160,24 @@ Screenshot of running on Windows:
 
 1. **How many system calls does the library version make compared to the system call version?**
 
-   > [TODO: read the `total` line of each `strace -c`.] The library version made __ system calls and the system call version made __, so the library version made __ more.
+   > From `strace -c`: the library version (`file_creator_lib`) made **37** system calls (1 error) and the system call version (`file_creator_sys`) made **33** (1 error), so the library version made **4 more**. The 1 error in both is `faccessat`, the dynamic loader checking for `/etc/ld.so.preload`, which doesn't exist.
 
 2. **What extra system calls appear in the library version? What do they do?**
 
-   > [TODO: check the exact counts in your `strace -c` output.] Extra `fstat` calls: `fopen`/`printf` check the file and stdout to choose a buffer size and buffering mode. Extra `brk` calls: `malloc` grows the heap to allocate the `FILE` buffers. `ioctl(1, TCGETS)`: checks whether stdout is a terminal (line-buffered) or a file/pipe (fully buffered). `getrandom`: the malloc implementation seeds a random value the first time it runs. The `mmap`/`openat` calls that load `libc.so.6` appear in both versions, because both are linked against the C library.
+   > Comparing the two `strace -c` tables, the extra calls are:
+   > - `fstat`: **4** in lib vs **2** in sys (+2). `fopen`/`fprintf` call `fstat` on `output.txt`, and `printf` calls it on stdout, to find the file type and the best block size for the `FILE` buffer, and whether stdout is a terminal.
+   > - `brk`: **3** in lib vs **1** in sys (+2). `brk` grows the heap. The library uses `malloc` to allocate the `FILE` structure and its I/O buffers, which needs more heap memory.
+   >
+   > Everything else (`execve`, `mmap` ×7, `mprotect` ×4, `munmap` ×3, `openat` ×3, `close` ×3, `read`, `getrandom`, `prlimit64`, `rseq`, `set_tid_address`, `set_robust_list`, `faccessat`) appears the same number of times in both. These come from starting a dynamically linked program and loading `libc.so.6`, not from my code.
 
 3. **How many `write()` calls does `fprintf()` actually produce?**
 
-   > [TODO: confirm in your trace.] One `write(3, "Hello from Operating Systems cla"..., 36)`, and it appears only at `fclose()`, not at the moment `fprintf` was called. `fprintf` only copies the text into the `FILE` buffer in user space; the buffer is flushed with a single `write()` when it is full or the file is closed. So the number of `write()` calls does not match the number of library calls.
+   > Exactly **one**: `write(3, "Hello from Operating Systems cla"..., 36) = 36`. It appears right before `close(3)`, which means `fprintf` did not write immediately. It only copied the text into the `FILE` buffer in user space, and `fclose` flushed the whole buffer with one `write()` and then closed the file. The library version has 2 `write` calls in total, the same as my version (one to the file, one to the terminal). This matches what I expected: buffering means the number of `write()` system calls depends on when the buffer is flushed, not on how many times `fprintf` is called.
 
 4. **In your own words, what is the real difference between a library function and a system call?**
 
-   > [Rewrite in your own words.] A library function (like `fprintf`) is ordinary code in user space inside libc: it formats, buffers and decides when to ask the kernel for help, and many calls can result in zero or one kernel request. A system call (like `write`) is the actual request to the kernel: the CPU switches to kernel mode, the kernel does the I/O, and returns. strace only sees system calls, which shows that every library I/O function ends up as `openat`/`write`/`close` underneath.
+   > A library function like `fprintf` or `fopen` is normal code that runs in user space inside libc. It does extra work for convenience: formatting, choosing flags and permissions, allocating and managing buffers. Only when it really needs the OS does it make a system call. A system call like `write` or `openat` is the actual request to the kernel: the CPU switches to kernel mode, the kernel touches the file or device, and returns. strace can only see system calls, and it shows that `fopen` → `openat`, `fprintf` + `fclose` → `write` + `close`, and `printf` → `write(1, ...)`. So library functions are wrappers built on top of system calls, and the extra `fstat`/`brk` calls are the cost of that convenience.
+
 
 ---
 
