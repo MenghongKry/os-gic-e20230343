@@ -1,0 +1,7 @@
+cd ../task1
+strace -e trace=openat,read,write,close ./file_creator_lib 2> ../task3_strace/strace_lib_task1.txt
+strace -e trace=openat,read,write,close ./file_creator_sys 2> ../task3_strace/strace_sys_task1.txt
+strace -e trace=openat,read,write,close ./file_reader_lib 2> ../task3_strace/strace_lib_reader.txt
+strace -e trace=openat,read,write,close ./file_reader_sys 2> ../task3_strace/strace_sys_reader.txt
+strace -c ./file_creator_lib 2> ../task3_strace/strace_summary_lib.txt
+strace -c ./file_creator_sys 2> ../task3_strace/strace_summary_sys.txt
