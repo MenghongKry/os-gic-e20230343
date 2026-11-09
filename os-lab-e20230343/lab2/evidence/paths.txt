@@ -1,0 +1,17 @@
+cd incoming
+mv -- "cash flow.txt" ../reports/
+cd ..
+mv -- "/home/gic-kry-menghong/oslab-work/lab2/incoming/tax summary.txt" "/home/gic-kry-menghong/oslab-work/lab2/reports/"
+cp -- "reports/cash flow.txt" "reports/tax summary.txt" "TechCorp/Legal/"
+cp -- "reports/cash flow.txt" "TechCorp/Legal/archive/first-original.txt"
+cd TechCorp/Support
+cat "../Legal/cash flow.txt"
+cat "/home/gic-kry-menghong/oslab-work/lab2/TechCorp/Legal/cash flow.txt"
+
+Decision: In step 3 I used relative paths, because I was in the lab folder and
+reports/ and TechCorp/ are directly inside it, so the paths were short.
+Absolute paths are better in a script or when I am in another folder,
+because they start at / and mean the same place from anywhere.
+
+Error: cat: 'reports/cash flow.txt': No such file or directory
+Fix: ../../reports/cash flow.txt

@@ -1,0 +1,6 @@
+reports/cash flow.txt
+reports/README.txt
+reports/tax summary.txt
+TechCorp/Legal/archive/first-original.txt
+TechCorp/Legal/cash flow.txt
+TechCorp/Legal/tax summary.txt
