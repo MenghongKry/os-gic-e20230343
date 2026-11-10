@@ -1,0 +1,14 @@
+Parent process (PID: 3475) — creating child...
+Parent: waiting for child (PID: 3477) to finish...
+Child process (PID: 3477, Parent PID: 3475)
+Child: sleeping 30s — observe the process tree now!
+Child: now executing 'ls -la'...
+total 36
+drwxrwxr-x 2 ubuntu ubuntu  4096 Nov 10 14:24 .
+drwxrwxr-x 7 ubuntu ubuntu  4096 Nov  1 08:43 ..
+-rw-rw-r-- 1 ubuntu ubuntu   547 Oct 20 08:32 command_used_forkchild.txt
+-rwxrwxr-x 1 ubuntu ubuntu 71016 Nov 10 14:24 forkchild
+-rw-rw-r-- 1 ubuntu ubuntu  1783 Oct 20 08:25 forkchild.c
+-rw-rw-r-- 1 ubuntu ubuntu   231 Nov 10 14:27 result_forkchild.txt
+Parent: child exited with status 0
+Parent: done.

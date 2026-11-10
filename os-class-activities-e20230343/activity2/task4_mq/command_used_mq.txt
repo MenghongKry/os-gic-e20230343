@@ -1,0 +1,20 @@
+  359  ./receiver
+  360  gcc -o sender sender.c -lrt
+  361  gcc -o receiver receiver.c -lrt
+  362  ./receiver
+  363  gcc -o sender sender.c -lrt
+  364  gcc -o receiver receiver.c -lrt
+  365  ./receiver
+  366  ./sender
+  367  ls /dev/mqueue
+  368  ./receiver > result-mq-ipc.txt
+  369  cat result-mq-ipc.txt
+  371  gcc -o sender sender.c -lrt
+  372  gcc -o receiver receiver.c -lrt
+  373  ./receiver
+  374  ./sender
+  375  ls /dev/mqueue
+  376  ./receiver > result-mq-ipc.txt
+  377  cat result-mq-ipc.txt
+  379  for f in task1/forkchild.c task1/result_forkchild.txt task1/command_used_forkchild.txt task2/winprocess.c task3_shm/shm-producer.c task3_shm/shm-consumer.c task3_shm/result-shm-ipc.txt task3_shm/command_used_shm.txt task4_mq/common.h task4_mq/sender.c task4_mq/receiver.c task4_mq/result-mq-ipc.txt task4_mq/command_used_mq.txt screenshots/task1_compile_run.png screenshots/task1_process_tree.png screenshots/task2_compile_run.png screenshots/task2_taskmanager_tree.png screenshots/task2_taskmanager_details.png screenshots/task3_compile_run.png screenshots/task4_compile_run.png; do [ -s "$f" ] && echo "OK      $f" || echo "MISSING $f"; done
+  380  history | grep -E "sender|receiver|mqueue|result-mq" | tail -n 20 > task4_mq/command_used_mq.txt

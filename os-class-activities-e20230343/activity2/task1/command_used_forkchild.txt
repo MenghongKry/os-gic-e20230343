@@ -1,0 +1,20 @@
+  158  git push origin main
+  159  git status 
+  160  u -aname
+  161  exit
+  162  ls
+  163  ls 
+  164  cd os-gic-e20230343/
+  165  ls
+  166  cd os-class-activities-e20230343/
+  167  ls
+  168  cd activity1/
+  169  ls
+  170  cd task1
+  171  ls
+  172  nano file_creator_win.c
+  173  cd cd ~/os-gic-e20230343/os-class-activities-e20230343/activity2/task1
+  174  cat result_forkchild.txt
+  175  cd ~/os-gic-e20230343/os-class-activities-e20230343/activity2/task1
+  176  cat result_forkchild.txt
+  177  history | tail -n 20 > command_used_forkchild.txt

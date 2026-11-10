@@ -1,0 +1,20 @@
+  192  ./shm-producer
+  193  ls -l /dev/shm/OS-hong
+  194  ./shm-consumer > result-shm-ipc.txt
+  195  cat result-shm-ipc.txt
+  196  ls /dev/shm
+  205  gcc -o forkchild forkchild.c
+  211  sed -i 's|"C:\\\\Windows\\\\System32\\\\mspaint.exe",  /\* Application path \*/|NULL,           /* Application path (NULL = search PATH) */|; s|NULL,           /\* Command line \*/|cmd,            /* Command line */|' winprocess.c
+  213  grep -n "cmd\|Application path" winprocess.c
+  217  cat > /tmp/patch.py <<'PYEOF'
+  232  """Run on a Windows 11 ARM64 VM (VMware Fusion on my Mac), compiled with gcc from w64devkit.
+  233  > Note: the sheet's path `C:\\\\Windows\\\\System32\\\\mspaint.exe` failed with `CreateProcess failed (error 2)` (file not found). On Windows 11, Paint is a Microsoft Store app; `where mspaint` shows it at `%LOCALAPPDATA%\\Microsoft\\WindowsApps\\mspaint.exe`. So I pass `NULL` as the application name and `"mspaint.exe"` as the command line, and `CreateProcess()` searches the PATH for it.
+  241  cat README.md
+  242  cat > /tmp/fill.py <<'PYEOF'
+  250                ("[Paste the content of result-shm-ipc.txt here]", "task3_shm/result-shm-ipc.txt"),
+  271  multipass exec ubuntu -- bash -c "echo '$(cat ~/.ssh/id_ed25519.pub)' >> ~/.ssh/authorized_keys"
+  275  multipass exec ubuntu -- bash -c "echo '$(cat ~/.ssh/id_ed25519.pub)' >> ~/.ssh/authorized_keys"
+  280  Your identification has been saved in /home/ubuntu/.ssh/id_ed25519
+  308  multipass exec ubuntu -- bash -c 'mkdir -p ~/.ssh && cat ~/mac_key.pub >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys && rm ~/mac_key.pub'
+  311  cd ~/os-gic-e20230343/os-class-activities-e20230343/activity2/task3_shm
+  312  history | grep -E "shm|gcc|cat|ls /dev" | tail -n 20 > command_used_shm.txt
