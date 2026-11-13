@@ -1,0 +1,26 @@
+
+=== BEFORE RENAME ===
+19143616 -rw-rw-r-- 2 gic-kry-menghong gic-kry-menghong 12 Nov 13 12:28 forest-hard.txt
+19143633 lrwxrwxrwx 1 gic-kry-menghong gic-kry-menghong 10 Nov 13 12:36 forest-soft.txt -> forest.txt
+19143616 -rw-rw-r-- 2 gic-kry-menghong gic-kry-menghong 12 Nov 13 12:28 forest.txt
+hard: version 125
+soft: version 125
+stored target: forest.txt
+
+=== AFTER RENAME, BEFORE REPAIR ===
+19143616 -rw-rw-r-- 2 gic-kry-menghong gic-kry-menghong 12 Nov 13 12:28 forest-hard.txt
+19143616 -rw-rw-r-- 2 gic-kry-menghong gic-kry-menghong 12 Nov 13 12:28 forest-old.txt
+19143633 lrwxrwxrwx 1 gic-kry-menghong gic-kry-menghong 10 Nov 13 12:36 forest-soft.txt -> forest.txt
+hard: version 125
+stored target: forest.txt
+soft: cat: forest-soft.txt: No such file or directory
+
+=== AFTER REPAIR ===
+19143616 -rw-rw-r-- 2 gic-kry-menghong gic-kry-menghong 12 Nov 13 12:28 forest-hard.txt
+19143616 -rw-rw-r-- 2 gic-kry-menghong gic-kry-menghong 12 Nov 13 12:28 forest-old.txt
+19143633 lrwxrwxrwx 1 gic-kry-menghong gic-kry-menghong 14 Nov 13 12:36 forest-soft.txt -> forest-old.txt
+stored target: forest-old.txt
+hard: version 125
+soft: version 125
+
+Decision: I stored the relative target maple-old.txt because it is read from the links/ folder, so the link keeps working if the whole lab3 folder is moved or copied; an absolute target like /home/<user>/oslab-work/lab3/links/maple-old.txt would still point to the old location after the move and the link would dangle.

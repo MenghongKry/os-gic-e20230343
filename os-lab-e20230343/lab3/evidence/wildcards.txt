@@ -1,0 +1,6 @@
+<notes/forest12.txt>
+<notes/forest1.txt>
+<notes/forest2.txt>
+<notes/forest1.txt>
+<notes/forest2.txt>
+<notes/*.txt>

@@ -1,0 +1,2 @@
+Q1: With three names (one.txt, two.txt, three.txt) each showed link count 3. After rm one.txt, two.txt and three.txt showed link count 2. After removing a second name, the last one would show 1.
+Q2: No, the data is not gone after deleting one.txt: cat two.txt still printed "keep me", because rm only removes a name and the inode still has other names pointing to it. The data is freed only when the last name is removed (link count 0) and no program still has the file open.
